@@ -38,21 +38,23 @@ class HostProfile(models.Model):
         ('Physical', '物理机'),
         ('Virtual', '虚拟机'),
         ('Container', '容器'),
-        ('Disk','硬盘')
+        ('Disk','硬盘'),
+        ('Memory','内存')
     )
     hostname = models.CharField(max_length=32,verbose_name=_('主机名'))
-    ip = models.CharField(max_length=16, primary_key=True,verbose_name=_('IP地址'))
+    ip = models.CharField(max_length=16,unique=True,verbose_name=_('IP地址'))
     type = models.CharField(max_length=128, choices=PLATFORM_CHOICES,default='Virtual',
                             verbose_name=_('类型'))
     serial_number = models.CharField(max_length=32,null=True,blank=True,verbose_name=_('序列号'))
     asset_number = models.CharField(max_length=32,null=True,blank=True,verbose_name=_('资产号'))
     position = models.CharField(max_length=128,null=True,blank=True,verbose_name=_('位置'))
+    mg_ip = models.CharField(max_length=16, null=True,blank=True,verbose_name=_('管理IP'))
     project = models.ForeignKey(ProjectProfile,null=True,blank=True,verbose_name=_('项目组'),
                                 on_delete=models.SET_NULL)
     owner = models.ForeignKey(UserProfile,null=True,blank=True,verbose_name=_('负责人'),
                               on_delete=models.SET_NULL)
-    parent = models.ForeignKey("self", null=True, blank=True, verbose_name=_('宿主'),
-                                 help_text="宿主",related_name="sub_cat",on_delete=models.CASCADE)
+    parent = models.ForeignKey("self", null=True, blank=True, verbose_name=_('宿主'),to_field='ip',
+                                 help_text="宿主",related_name="sub_cat",on_delete=models.SET_NULL)
     idle = models.BooleanField(default=True,verbose_name=_('空闲'))
     class Meta:
         verbose_name = "资产"

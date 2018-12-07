@@ -67,11 +67,11 @@ class UserViewset(mixins.ListModelMixin,mixins.CreateModelMixin, mixins.UpdateMo
     def perform_create(self, serializer):
         return serializer.save()
 
-class HostViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class HostViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin,mixins.UpdateModelMixin, viewsets.GenericViewSet):
     """
     资产
     """
-    queryset = HostProfile.objects.all()
+    queryset = HostProfile.objects.get_queryset().order_by('ip')
     serializer_class = HostSerializer
     pagination_class = CommonPagination
 
