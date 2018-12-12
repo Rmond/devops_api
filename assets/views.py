@@ -67,13 +67,20 @@ class UserViewset(mixins.ListModelMixin,mixins.CreateModelMixin, mixins.UpdateMo
     def perform_create(self, serializer):
         return serializer.save()
 
-class HostViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin,mixins.UpdateModelMixin, viewsets.GenericViewSet):
+class HostViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,mixins.UpdateModelMixin, viewsets.GenericViewSet):
     """
     资产
     """
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     queryset = HostProfile.objects.get_queryset().order_by('ip')
     serializer_class = HostSerializer
     pagination_class = CommonPagination
+
+    def get_permissions(self):
+        if self.action == "retrieve" or self.action == "update":
+            return [IsAuthenticated()]
+        else:
+            return [IsAdminUser()]
 
 class HostIPListViewset(mixins.ListModelMixin,viewsets.GenericViewSet):
     queryset = HostProfile.objects.filter(parent=None)

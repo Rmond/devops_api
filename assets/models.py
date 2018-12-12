@@ -63,3 +63,18 @@ class HostProfile(models.Model):
     def __str__(self):
         return self.ip
 
+class UserHost(models.Model):
+    """
+    用户-资产
+    """
+    user = models.ForeignKey(UserProfile, verbose_name="用户",on_delete=models.CASCADE)
+    host = models.ForeignKey(HostProfile, verbose_name="资产", help_text="资产id",on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = '用户授权'
+        verbose_name_plural = verbose_name
+        unique_together = ("user", "host")
+
+    def __str__(self):
+        return self.user.username
+

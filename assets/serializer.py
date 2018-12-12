@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import HostProfile
+from rest_framework.validators import UniqueTogetherValidator
+from .models import HostProfile,UserHost
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
@@ -39,4 +40,29 @@ class HostSerializer(serializers.ModelSerializer):
     class Meta:
         model = HostProfile
         fields = "__all__"
+
+class UserHostDetailSerializer(serializers.ModelSerializer):
+    host = HostSerializer()
+
+    class Meta:
+        model = UserHost
+        fields = ("host", "id")
+
+
+class UseHostSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+
+    class Meta:
+        model = UserHost
+        validators = [
+            UniqueTogetherValidator(
+                queryset=UserHost.objects.all(),
+                fields=('user', 'host'),
+                message="主机已授权"
+            )
+        ]
+
+        fields = ("user", "host", "id")
 
