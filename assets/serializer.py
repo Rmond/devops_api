@@ -41,7 +41,7 @@ class HostSerializer(serializers.ModelSerializer):
         model = HostProfile
         fields = "__all__"
 
-class UserHostDetailSerializer(serializers.ModelSerializer):
+class UserHostSerializer(serializers.ModelSerializer):
     host = HostSerializer()
 
     class Meta:
@@ -49,10 +49,13 @@ class UserHostDetailSerializer(serializers.ModelSerializer):
         fields = ("host", "id")
 
 
-class UseHostSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(
-        default=serializers.CurrentUserDefault()
-    )
+class UserHostDetailSerializer(serializers.ModelSerializer):
+    user_username = serializers.CharField(source='user.username')
+    host_ip = serializers.CharField(source='host.ip')
+    def create(self, validated_data):
+        validated_data['user'] = User.objects.get(username=validated_data['user']['username'])
+        validated_data['host'] = HostProfile.objects.get(ip=validated_data['host']['ip'])
+        return super(UserHostDetailSerializer, self).create(validated_data=validated_data)
 
     class Meta:
         model = UserHost
@@ -63,6 +66,5 @@ class UseHostSerializer(serializers.ModelSerializer):
                 message="主机已授权"
             )
         ]
-
-        fields = ("user", "host", "id")
+        fields = ("user_username", "host_ip","id")
 

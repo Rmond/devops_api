@@ -37,9 +37,7 @@ class HostProfile(models.Model):
     PLATFORM_CHOICES = (
         ('Physical', '物理机'),
         ('Virtual', '虚拟机'),
-        ('Container', '容器'),
-        ('Disk','硬盘'),
-        ('Memory','内存')
+        ('Container', '容器')
     )
     hostname = models.CharField(max_length=32,verbose_name=_('主机名'))
     ip = models.CharField(max_length=16,unique=True,verbose_name=_('IP地址'))
@@ -57,7 +55,7 @@ class HostProfile(models.Model):
                                  help_text="宿主",related_name="sub_cat",on_delete=models.SET_NULL)
     idle = models.BooleanField(default=True,verbose_name=_('空闲'))
     class Meta:
-        verbose_name = "资产"
+        verbose_name = "主机"
         verbose_name_plural = verbose_name
 
     def __str__(self):
@@ -68,7 +66,7 @@ class UserHost(models.Model):
     用户-资产
     """
     user = models.ForeignKey(UserProfile, verbose_name="用户",on_delete=models.CASCADE)
-    host = models.ForeignKey(HostProfile, verbose_name="资产", help_text="资产id",on_delete=models.CASCADE)
+    host = models.ForeignKey(HostProfile, verbose_name="主机", help_text="主机IP",on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '用户授权'

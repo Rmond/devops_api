@@ -25,6 +25,7 @@ router = DefaultRouter()
 
 router.register(r'user', UserViewset, base_name="user")
 router.register(r'host', HostViewset, base_name="host")
+router.register(r'userhost', UserHostViewset, base_name="userhost")
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),

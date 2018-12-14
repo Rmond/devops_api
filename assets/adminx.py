@@ -21,7 +21,16 @@ class ProjectAdmin(object):
     list_display = ('name','owner')
     search_fields = ('name')
 
+class ProjectAdmin(object):
+    list_display = ('name','owner')
+    search_fields = ('name')
+
+class UserHostAdmin(object):
+    list_display = ('user', 'host')
+    search_fields = ('user', 'host')
+
 xadmin.site.register(ProjectProfile,ProjectAdmin)
 xadmin.site.register(HostProfile, HostAdmin)
+xadmin.site.register(UserHost, UserHostAdmin)
 xadmin.site.register(views.BaseAdminView, BaseSetting)
 xadmin.site.register(views.CommAdminView, GlobalSettings)

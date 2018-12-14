@@ -12,7 +12,8 @@ from rest_framework_jwt.serializers import jwt_encode_handler, jwt_payload_handl
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import HostProfile
-from .serializer import UserSerializer,HostSerializer
+from .serializer import *
+from .filters import *
 
 User = get_user_model()
 
@@ -75,13 +76,39 @@ class HostViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Retriev
     queryset = HostProfile.objects.get_queryset().order_by('ip')
     serializer_class = HostSerializer
     pagination_class = CommonPagination
+    permission_classes = (IsAdminUser,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_fields = ('ip','hostname','type')
+    search_fields = ('ip', 'hostname','type')
+
+
+class UserHostViewset(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin,
+                     mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    """
+    list:
+        获取主机权限列表
+    retrieve:
+        判断主机是否授权
+    create:
+        授权主机
+    """
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_class = UserHostFilter
 
     def get_permissions(self):
-        if self.action == "retrieve" or self.action == "update":
+        if self.action == "list":
             return [IsAuthenticated()]
         else:
             return [IsAdminUser()]
 
-class HostIPListViewset(mixins.ListModelMixin,viewsets.GenericViewSet):
-    queryset = HostProfile.objects.filter(parent=None)
-    serializer_class = HostSerializer
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return UserHost.objects.all()
+        else:
+            return UserHost.objects.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return UserHostDetailSerializer
+        return UserHostSerializer
