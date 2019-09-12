@@ -112,3 +112,10 @@ class UserHostViewset(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Ret
         if self.request.user.is_staff:
             return UserHostDetailSerializer
         return UserHostSerializer
+
+class ProjectViewset(viewsets.ModelViewSet):
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
+    queryset = ProjectProfile.objects.all()
+    serializer_class = ProjectSerializer
+    pagination_class = CommonPagination
+    permission_classes = (IsAdminUser,)

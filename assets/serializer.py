@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework.validators import UniqueTogetherValidator
-from .models import HostProfile,UserHost
+from .models import HostProfile,UserHost,ProjectProfile
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
@@ -67,4 +67,9 @@ class UserHostDetailSerializer(serializers.ModelSerializer):
             )
         ]
         fields = ("user_username", "host_ip","id")
+
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectProfile
+        fields = "__all__"
 

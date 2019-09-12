@@ -8,7 +8,7 @@ class ProjectProfile(models.Model):
     """
     项目组
     """
-    name = models.CharField(max_length=30, verbose_name=_('项目组'),default="")
+    name = models.CharField(max_length=32, verbose_name=_('项目组'),default="")
     owner = models.CharField(max_length=128,verbose_name=_('负责人'))
     class Meta:
         verbose_name = "项目组"
